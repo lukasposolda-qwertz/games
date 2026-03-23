@@ -529,7 +529,7 @@ const SCENES = [
     hotspots: [
       {
         id: 'tiller', label: 'Steering Oar',
-        x: 20, y: 42, w: 44, h: 50,
+        x: 26, y: 52, w: 40, h: 44,
         actions: [
           { verbs: ['look'], condition: s => !s.tillerExamined,
             text: "The steering oar hangs loose — the bronze locking pin has snapped. Without it, the oar spins freely and the ship cannot be directed. The current is already pulling toward Charybdis." },
@@ -549,7 +549,7 @@ const SCENES = [
       },
       {
         id: 'storage_hold', label: 'Storage Hold',
-        x: 16, y: 60, w: 42, h: 32,
+        x: 18, y: 62, w: 44, h: 30,
         actions: [
           { verbs: ['look'], condition: s => !s.shaftTaken,
             text: "The ship's storage hold, propped open. Inside: coiled lines, spare oars — and a long shaft of olive wood." },
@@ -563,7 +563,7 @@ const SCENES = [
       },
       {
         id: 'helmsman', label: 'Helmsman',
-        x: 35, y: 18, w: 35, h: 65,
+        x: 36, y: 22, w: 34, h: 62,
         actions: [
           { verbs: ['look'], text: "Your helmsman, white-knuckled, watching the water. He knows the narrows. He needs the tiller back." },
           { verbs: ['talk'], condition: s => !s.tillerRepaired,
@@ -577,7 +577,7 @@ const SCENES = [
       },
       {
         id: 'workbench', label: 'Deck Rail',
-        x: 14, y: 52, w: 28, h: 20,
+        x: 20, y: 50, w: 28, h: 18,
         actions: [
           { verbs: ['look'], text: "The ship's deck rail — a flat surface. You could work here." },
           { verbs: ['use'], requiresItem: 'bronze-knife', condition: s => s.shaftTaken && !s.pinRough,
@@ -594,7 +594,7 @@ const SCENES = [
       },
       {
         id: 'scylla_side', label: 'Scylla',
-        x: 62, y: 0, w: 38, h: 65,
+        x: 62, y: 0, w: 38, h: 50,
         actions: [
           { verbs: ['look'],
             text: "Scylla. Six necks, six heads, each with three rows of teeth. She takes six men from every ship that passes. The prophecy told you this. You were told not to fight her — there is no fighting her. You can only keep moving." },
@@ -603,7 +603,7 @@ const SCENES = [
       },
       {
         id: 'charybdis_side', label: 'Charybdis',
-        x: 0, y: 10, w: 28, h: 68,
+        x: 0, y: 12, w: 30, h: 72,
         actions: [
           { verbs: ['look'],
             text: "Charybdis — the whirlpool. Three times a day she swallows the sea and vomits it back. A ship caught in her pull is gone. Hug the Scylla side. Stay in the channel." },
@@ -612,7 +612,7 @@ const SCENES = [
       },
       {
         id: 'forward_passage', label: 'Forward',
-        x: 14, y: 8, w: 42, h: 28,
+        x: 16, y: 8, w: 42, h: 26,
         actions: [
           { verbs: ['look'], text: "The far end of the narrows. Open sea beyond. But the ship must be steerable to reach it." },
           { verbs: ['walk'], condition: s => s.tillerRepaired && s.helmsmanReady,

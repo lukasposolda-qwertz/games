@@ -123,7 +123,7 @@ const SCENES = [
     hotspots: [
       {
         id: 'tool_chest', label: 'Tool Chest',
-        x: 5, y: 76, w: 22, h: 18,
+        x: 2, y: 68, w: 18, h: 26,
         actions: [
           { verbs: ['look'], text: "A cedar chest, left open by Calypso's nymphs. Bronze tools and scraps of wood — and among them, a knife." },
           { verbs: ['take', 'open'],
@@ -136,7 +136,7 @@ const SCENES = [
       },
       {
         id: 'sail_cloth', label: 'Canvas',
-        x: 36, y: 5, w: 26, h: 48,
+        x: 30, y: 8, w: 24, h: 42,
         actions: [
           { verbs: ['look'], condition: s => !s.sailCut,
             text: "Heavy canvas, rolled and bound. Enough for a sail — if you had something to cut it with." },
@@ -152,7 +152,7 @@ const SCENES = [
       },
       {
         id: 'rope_coil', label: 'Rope',
-        x: 42, y: 74, w: 18, h: 18,
+        x: 40, y: 74, w: 16, h: 18,
         actions: [
           { verbs: ['look'], text: "A coil of rope, salt-stiffened. Long enough to rig a small mast." },
           { verbs: ['take'], condition: s => !s.ropeFound,
@@ -164,7 +164,7 @@ const SCENES = [
       },
       {
         id: 'calypso', label: 'Calypso',
-        x: 67, y: 8, w: 31, h: 85,
+        x: 68, y: 5, w: 32, h: 88,
         actions: [
           { verbs: ['look'],
             text: "Calypso. Goddess of the isle. She does not look at you. Seven years of her love, and she has not looked at you once since Hermes came. The sea has her attention now." },
@@ -178,7 +178,7 @@ const SCENES = [
       },
       {
         id: 'raft', label: 'Raft',
-        x: 28, y: 52, w: 40, h: 36,
+        x: 22, y: 44, w: 44, h: 40,
         actions: [
           { verbs: ['look'], condition: s => !s.sailOnRaft && !s.ropeOnRaft,
             text: "Your raft. Solid lashed timbers — you built it with your own hands. It needs a sail and rigging before it will hold the open sea." },
@@ -230,7 +230,7 @@ const SCENES = [
     hotspots: [
       {
         id: 'wine_skin', label: 'Wine Skin',
-        x: 2, y: 60, w: 12, h: 32,
+        x: 2, y: 72, w: 12, h: 24,
         actions: [
           { verbs: ['look'], text: "A bulging wine skin — the strong dark wine you brought from the ship. The Cyclops has never tasted wine." },
           { verbs: ['take'], condition: s => !s.wineTaken,
@@ -241,7 +241,7 @@ const SCENES = [
       },
       {
         id: 'olive_shaft', label: 'Olive Shaft',
-        x: 5, y: 44, w: 18, h: 38,
+        x: 8, y: 74, w: 22, h: 22,
         actions: [
           { verbs: ['look'], condition: s => !s.shaftTaken,
             text: "A length of olive trunk, propped in the corner. Heavy. Green-hard. You could sharpen it — and fire would make it harder still." },
@@ -255,7 +255,7 @@ const SCENES = [
       },
       {
         id: 'fire_pit', label: 'Fire Pit',
-        x: 30, y: 62, w: 32, h: 28,
+        x: 30, y: 65, w: 30, h: 30,
         actions: [
           { verbs: ['look'], text: "The Cyclops's fire. Embers still red. Enough heat to harden olive wood to iron-hardness." },
           { verbs: ['use'], requiresItem: 'spare-spear-shaft', condition: s => !s.stakeHardened,
@@ -269,7 +269,7 @@ const SCENES = [
       },
       {
         id: 'cyclops', label: 'Cyclops',
-        x: 18, y: 2, w: 62, h: 62,
+        x: 8, y: 0, w: 62, h: 78,
         actions: [
           { verbs: ['look'], condition: s => !s.cyclopsAsleep && !s.cyclopsBlinded,
             text: "Polyphemus. One eye, large as a wheel, tracking your movement. He is not sleeping. Not yet." },
@@ -296,7 +296,7 @@ const SCENES = [
       },
       {
         id: 'cave_entrance', label: 'Cave Entrance',
-        x: 68, y: 22, w: 28, h: 58,
+        x: 65, y: 35, w: 33, h: 55,
         actions: [
           { verbs: ['look'], condition: s => !s.cyclopsBlinded,
             text: "A massive stone seals the cave mouth. You cannot move it alone — and the Cyclops would hear you try." },
@@ -333,7 +333,7 @@ const SCENES = [
     hotspots: [
       {
         id: 'garden_window', label: 'Moly Flower',
-        x: 3, y: 68, w: 16, h: 26,
+        x: 4, y: 77, w: 12, h: 18,
         actions: [
           { verbs: ['look'], condition: s => !s.molyFound,
             text: "A narrow window onto a walled garden. Among common herbs grows something unusual — white flowers, black roots. Moly. The gods' antidote." },
@@ -348,7 +348,7 @@ const SCENES = [
       },
       {
         id: 'cauldron', label: 'Cauldron',
-        x: 36, y: 60, w: 24, h: 24,
+        x: 22, y: 54, w: 24, h: 28,
         actions: [
           { verbs: ['look'], text: "Circe's cauldron. A yellow brew that smells of honey and iron. You know what it does to men." },
           { verbs: ['use'], requiresItem: 'moly-herb', condition: s => !s.molyEaten,
@@ -363,7 +363,7 @@ const SCENES = [
       },
       {
         id: 'circe', label: 'Circe',
-        x: 36, y: 12, w: 44, h: 80,
+        x: 46, y: 8, w: 36, h: 84,
         actions: [
           { verbs: ['look'],
             text: "Circe. She is exactly what you were told — beautiful, cold, patient. She watches you with the calm of someone who has never been refused." },
@@ -387,7 +387,7 @@ const SCENES = [
       },
       {
         id: 'exit_door', label: 'Barred Gate',
-        x: 74, y: 25, w: 24, h: 60,
+        x: 76, y: 14, w: 22, h: 74,
         actions: [
           { verbs: ['look'], condition: s => !s.oathReceived,
             text: "A heavy door of polished wood. You sense it would not open for you — not yet." },
@@ -424,7 +424,7 @@ const SCENES = [
     hotspots: [
       {
         id: 'beeswax_jar', label: 'Beeswax Jar',
-        x: 60, y: 68, w: 20, h: 24,
+        x: 2, y: 76, w: 18, h: 20,
         actions: [
           { verbs: ['look'], text: "A clay jar of thick beeswax. Soft enough to press into ears." },
           { verbs: ['take'], condition: s => !s.waxTaken,
@@ -435,7 +435,7 @@ const SCENES = [
       },
       {
         id: 'ship_rope', label: 'Ship Rope',
-        x: 34, y: 68, w: 18, h: 24,
+        x: 32, y: 68, w: 18, h: 22,
         actions: [
           { verbs: ['look'], text: "A coil of ship rope, heavy and long. Circe said to bind yourself to the mast with it." },
           { verbs: ['take'], condition: s => !s.ropeFound,
@@ -446,7 +446,7 @@ const SCENES = [
       },
       {
         id: 'crew', label: 'Crew',
-        x: 2, y: 52, w: 34, h: 42,
+        x: 0, y: 50, w: 32, h: 46,
         actions: [
           { verbs: ['look'], text: "Your men. Tired, scarred, still here. They trust you — and they do not yet know what is coming." },
           { verbs: ['talk'],
@@ -462,7 +462,7 @@ const SCENES = [
       },
       {
         id: 'mast', label: 'Mast',
-        x: 36, y: 0, w: 16, h: 80,
+        x: 35, y: 0, w: 15, h: 60,
         actions: [
           { verbs: ['look'], text: "The main mast. A fixed point in a world about to become very loud." },
           { verbs: ['use'], requiresItem: 'rope-coil', condition: s => s.crewProtected && !s.selfBound,
@@ -478,7 +478,7 @@ const SCENES = [
       },
       {
         id: 'sirens', label: 'Sirens',
-        x: 60, y: 5, w: 38, h: 60,
+        x: 55, y: 0, w: 43, h: 62,
         actions: [
           { verbs: ['look'], condition: s => !s.selfBound,
             text: "Shapes on the rocks ahead. Figures. Feathers and faces. You cannot hear them yet — but the water around the rocks is white with wreckage." },
@@ -493,7 +493,7 @@ const SCENES = [
       },
       {
         id: 'horizon', label: 'Open Sea',
-        x: 0, y: 5, w: 28, h: 30,
+        x: 0, y: 2, w: 26, h: 30,
         actions: [
           { verbs: ['look'], text: "Open water ahead. The narrows are past — but not the last danger." },
           { verbs: ['walk'], condition: s => s.selfBound && s.prophecyReceived,
@@ -528,15 +528,15 @@ const SCENES = [
     ],
     hotspots: [
       {
-        id: 'tiller', label: 'Ship\'s Wheel',
-        x: 38, y: 28, w: 30, h: 44,
+        id: 'tiller', label: 'Steering Oar',
+        x: 20, y: 42, w: 44, h: 50,
         actions: [
           { verbs: ['look'], condition: s => !s.tillerExamined,
-            text: "The tiller swings loose. The pin socket is empty — the bronze pin is lying on the deck in two pieces. The ship is at the mercy of the current." },
+            text: "The steering oar hangs loose — the bronze locking pin has snapped. Without it, the oar spins freely and the ship cannot be directed. The current is already pulling toward Charybdis." },
           { verbs: ['look'], condition: s => s.tillerExamined && !s.tillerRepaired,
             text: "The pin socket waits. You need a replacement pin that fits — bronze-weight olive wood, shaped true." },
           { verbs: ['look'], condition: s => s.tillerRepaired,
-            text: "The tiller holds. The helmsman is at it now." },
+            text: "The steering oar holds. The helmsman is at it now." },
           { verbs: ['take'], condition: s => !s.tillerExamined,
             result: { addItem: 'broken-tiller-pin', setState: { tillerExamined: true } },
             text: "You pick up the two halves of the bronze pin. Snapped clean. You hold them together to understand the shape you need to carve." },
@@ -549,7 +549,7 @@ const SCENES = [
       },
       {
         id: 'storage_hold', label: 'Storage Hold',
-        x: 2, y: 72, w: 30, h: 24,
+        x: 16, y: 60, w: 42, h: 32,
         actions: [
           { verbs: ['look'], condition: s => !s.shaftTaken,
             text: "The ship's storage hold, propped open. Inside: coiled lines, spare oars — and a long shaft of olive wood." },
@@ -563,7 +563,7 @@ const SCENES = [
       },
       {
         id: 'helmsman', label: 'Helmsman',
-        x: 30, y: 12, w: 46, h: 72,
+        x: 35, y: 18, w: 35, h: 65,
         actions: [
           { verbs: ['look'], text: "Your helmsman, white-knuckled, watching the water. He knows the narrows. He needs the tiller back." },
           { verbs: ['talk'], condition: s => !s.tillerRepaired,
@@ -577,7 +577,7 @@ const SCENES = [
       },
       {
         id: 'workbench', label: 'Deck Rail',
-        x: 2, y: 52, w: 30, h: 28,
+        x: 14, y: 52, w: 28, h: 20,
         actions: [
           { verbs: ['look'], text: "The ship's deck rail — a flat surface. You could work here." },
           { verbs: ['use'], requiresItem: 'bronze-knife', condition: s => s.shaftTaken && !s.pinRough,
@@ -594,7 +594,7 @@ const SCENES = [
       },
       {
         id: 'scylla_side', label: 'Scylla',
-        x: 70, y: 5, w: 28, h: 52,
+        x: 62, y: 0, w: 38, h: 65,
         actions: [
           { verbs: ['look'],
             text: "Scylla. Six necks, six heads, each with three rows of teeth. She takes six men from every ship that passes. The prophecy told you this. You were told not to fight her — there is no fighting her. You can only keep moving." },
@@ -603,7 +603,7 @@ const SCENES = [
       },
       {
         id: 'charybdis_side', label: 'Charybdis',
-        x: 0, y: 10, w: 30, h: 62,
+        x: 0, y: 10, w: 28, h: 68,
         actions: [
           { verbs: ['look'],
             text: "Charybdis — the whirlpool. Three times a day she swallows the sea and vomits it back. A ship caught in her pull is gone. Hug the Scylla side. Stay in the channel." },
@@ -612,7 +612,7 @@ const SCENES = [
       },
       {
         id: 'forward_passage', label: 'Forward',
-        x: 34, y: 5, w: 30, h: 18,
+        x: 14, y: 8, w: 42, h: 28,
         actions: [
           { verbs: ['look'], text: "The far end of the narrows. Open sea beyond. But the ship must be steerable to reach it." },
           { verbs: ['walk'], condition: s => s.tillerRepaired && s.helmsmanReady,
@@ -647,7 +647,7 @@ const SCENES = [
     hotspots: [
       {
         id: 'shore_bundle', label: 'Cloak Bundle',
-        x: 2, y: 55, w: 22, h: 32,
+        x: 2, y: 48, w: 18, h: 34,
         actions: [
           { verbs: ['look'], condition: s => !s.cloakFound,
             text: "A rough bundle tied with cord, left at the waterline. A cloak — filthy wool, road-stained, smelling of old fire. Not the garment of a king. Exactly what you need." },
@@ -661,7 +661,7 @@ const SCENES = [
       },
       {
         id: 'thicket', label: 'Rocky Ground',
-        x: 50, y: 62, w: 30, h: 30,
+        x: 2, y: 74, w: 28, h: 24,
         actions: [
           { verbs: ['look'], condition: s => !s.thicketSearched,
             text: "Tall reeds and thornbush, dense along the rock face. Something long and straight is hidden in there. You can see it if you know what you are looking for." },
@@ -682,7 +682,7 @@ const SCENES = [
       },
       {
         id: 'odysseus_self', label: 'Yourself',
-        x: 22, y: 32, w: 36, h: 58,
+        x: 18, y: 34, w: 34, h: 56,
         actions: [
           { verbs: ['look'],
             text: "You. Older than when you left. Harder. You look nothing like a king — which may be the only advantage left to you." },
@@ -695,7 +695,7 @@ const SCENES = [
       },
       {
         id: 'palace_view', label: 'Palace',
-        x: 60, y: 5, w: 36, h: 32,
+        x: 62, y: 4, w: 26, h: 28,
         actions: [
           { verbs: ['look'],
             text: "Ithaca's palace, up on the hill. Smoke from the hall. Torchlight already, though it is barely evening. The suitors are feasting again. They have been feasting for three years." }
@@ -703,7 +703,7 @@ const SCENES = [
       },
       {
         id: 'path_forward', label: 'Path to Palace',
-        x: 52, y: 45, w: 26, h: 48,
+        x: 52, y: 22, w: 30, h: 68,
         actions: [
           { verbs: ['look'], text: "The path up to the palace. It is familiar. Everything is familiar and nothing is the same." },
           { verbs: ['walk'], condition: s => s.cloakWorn && s.bowFound,
@@ -739,7 +739,7 @@ const SCENES = [
     hotspots: [
       {
         id: 'throne_nook', label: 'Loose Stone',
-        x: 20, y: 15, w: 18, h: 42,
+        x: 16, y: 65, w: 20, h: 28,
         actions: [
           { verbs: ['look'], condition: s => !s.sealFound,
             text: "The stone behind the throne pillar. Loose — you left it loose on purpose, twenty years ago. Nobody has touched it." },
@@ -754,7 +754,7 @@ const SCENES = [
       },
       {
         id: 'contest_target', label: 'Axe Contest',
-        x: 4, y: 60, w: 18, h: 36,
+        x: 10, y: 58, w: 22, h: 40,
         actions: [
           { verbs: ['look'], condition: s => !s.bowUsed,
             text: "Twelve axe-handles set in a row, holes aligned. The contest: string the bow of Odysseus and drive a single arrow through all twelve. The suitors have been trying for days." },
@@ -771,7 +771,7 @@ const SCENES = [
       },
       {
         id: 'suitors', label: 'Suitors',
-        x: 18, y: 28, w: 52, h: 56,
+        x: 26, y: 22, w: 44, h: 60,
         actions: [
           { verbs: ['look'], condition: s => !s.bowUsed,
             text: "The suitors. A hundred or more. Eating your food, drinking your wine, wearing out your floors. They do not look at a beggar twice." },
@@ -786,7 +786,7 @@ const SCENES = [
       },
       {
         id: 'penelope', label: 'Penelope',
-        x: 2, y: 8, w: 20, h: 82,
+        x: 0, y: 8, w: 18, h: 62,
         actions: [
           { verbs: ['look'],
             text: "Penelope. Three years of suitors and she has not broken. Her face gives nothing away — but her eyes are watching the beggar who just strung the bow. Those eyes do not believe in coincidence." },
@@ -806,7 +806,7 @@ const SCENES = [
       },
       {
         id: 'inner_door', label: 'Inner Chamber',
-        x: 60, y: 15, w: 24, h: 45,
+        x: 36, y: 82, w: 26, h: 16,
         actions: [
           { verbs: ['look'], condition: s => !s.sealGiven,
             text: "The door to the inner chambers. Closed." },
@@ -837,7 +837,7 @@ const SCENES = [
     hotspots: [
       {
         id: 'penelope_bed', label: 'Penelope',
-        x: 2, y: 10, w: 30, h: 85,
+        x: 0, y: 14, w: 30, h: 80,
         actions: [
           { verbs: ['look'],
             text: "Penelope. She has been waiting twenty years for the right man to say the right thing. She is not going to make it easy. You would not respect her if she did." },
@@ -856,7 +856,7 @@ const SCENES = [
       },
       {
         id: 'the_bed', label: 'The Bed',
-        x: 28, y: 52, w: 38, h: 42,
+        x: 22, y: 45, w: 38, h: 48,
         actions: [
           { verbs: ['look'], condition: s => !s.bedExamined,
             result: { setState: { bedExamined: true } },
@@ -873,7 +873,7 @@ const SCENES = [
       },
       {
         id: 'olive_window', label: 'Olive Tree',
-        x: 36, y: 5, w: 30, h: 72,
+        x: 32, y: 0, w: 34, h: 55,
         actions: [
           { verbs: ['look'], condition: s => !s.treeExamined,
             result: { setState: { treeExamined: true } },

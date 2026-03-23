@@ -130,7 +130,9 @@ const Renderer = (() => {
   function renderHotspots(scene) {
     const layer = $('hotspot-layer');
     layer.innerHTML = '';
-    scene.hotspots.forEach(hs => {
+    // Sort largest hotspots first so smaller ones are painted on top (higher DOM order wins)
+    const sorted = [...scene.hotspots].sort((a, b) => (b.w * b.h) - (a.w * a.h));
+    sorted.forEach(hs => {
       const div = document.createElement('div');
       div.className = 'hotspot';
       div.dataset.id = hs.id;

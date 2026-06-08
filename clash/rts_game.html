@@ -21,8 +21,11 @@ canvas{flex:1;display:block;cursor:crosshair}
 .lb{font-size:12px;color:#999}
 .ct{font-size:13px;font-weight:700;color:#53d769}
 #ov{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;justify-content:center;align-items:center;flex-direction:column;z-index:99}
-#ov h1{font-size:44px;margin-bottom:16px}
-#ov button{padding:10px 28px;font-size:18px;cursor:pointer;border-radius:8px;border:none;background:#e94560;color:#fff;margin-top:8px}
+#ov h1{font-size:44px;margin-bottom:8px}
+#ov .ov-sub{font-size:16px;color:#aaa;margin-bottom:20px}
+#ov button{padding:10px 28px;font-size:18px;cursor:pointer;border-radius:8px;border:2px solid #e94560;background:#e94560;color:#fff;margin-top:8px;transition:.15s}
+#ov button:hover{opacity:.85}
+#ov .ov-btn2{background:transparent;border-color:#ffd700;color:#ffd700}
 .w{color:#53d769}.l{color:#e94560}
 #lvl-ov{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;justify-content:center;align-items:center;flex-direction:column;z-index:98}
 #lvl-ov h1{font-size:48px;color:#ffd700;margin-bottom:12px}
@@ -84,7 +87,7 @@ canvas{flex:1;display:block;cursor:crosshair}
  <div class="sec"><span class="lb">Dum(<span class="ct" id="nDu">0</span>)</span></div>
  <div class="sec" id="hpSec"><span class="lb" style="color:#53d769">&hearts;</span><span class="ct" id="hp0">1000</span><span class="lb" id="hpSep" style="color:#e94560">&nbsp;|&nbsp;</span><span class="ct" id="hp1" style="color:#e94560">1000</span></div>
 </div>
-<div id="ov"><h1 id="eMsg"></h1><button onclick="location.reload()">Play Again</button></div>
+<div id="ov"><h1 id="eMsg"></h1><div class="ov-sub" id="eSubMsg"></div><button id="eBtnRestart">Start from Beginning</button><button class="ov-btn2" id="eBtnResume" style="display:none">Continue from Level <span id="eResumeLvl"></span></button></div>
 <div id="lvl-ov"><h1 id="lvlMsg">LEVEL COMPLETE!</h1><div class="desc" id="lvlDesc"></div><button id="lvlBtn">Next Level &rarr;</button></div>
 <script>
 window.G=(function(){
@@ -681,10 +684,35 @@ function uiUpdate(){
   document.getElementById('bDu').disabled=gold[P]<DUM_COST||cnt(P,'dummy')>=DUM_MAX;
 }
 
+/* ===== PROGRESS PERSISTENCE ===== */
+var SAVE_KEY='clashGrounds_maxLevel';
+function loadMaxLevel(){return parseInt(localStorage.getItem(SAVE_KEY)||'1',10)||1}
+function saveMaxLevel(lvl){try{localStorage.setItem(SAVE_KEY,String(lvl))}catch(e){}}
+
 /* ===== END GAME ===== */
 function endGame(won){
   over=true;
-  if(!won){document.getElementById('ov').style.display='flex';var m=document.getElementById('eMsg');m.textContent='DEFEAT!';m.className='l';return}
+  if(!won){
+    // Save the highest level the player reached (current level counts as achieved)
+    var maxLvl=Math.max(loadMaxLevel(),currentLevel);
+    saveMaxLevel(maxLvl);
+    var ov=document.getElementById('ov');
+    var m=document.getElementById('eMsg');m.textContent='DEFEAT!';m.className='l';
+    document.getElementById('eSubMsg').textContent='You fell on Level '+currentLevel+'.';
+    // Restart from 1
+    document.getElementById('eBtnRestart').onclick=function(){currentLevel=1;resetForLevel(1);ov.style.display='none'};
+    // Resume from highest reached level (only show if >1)
+    var resumeBtn=document.getElementById('eBtnResume');
+    if(maxLvl>1){
+      document.getElementById('eResumeLvl').textContent=maxLvl;
+      resumeBtn.style.display='';
+      resumeBtn.onclick=function(){resetForLevel(maxLvl);ov.style.display='none'};
+    }else{
+      resumeBtn.style.display='none';
+    }
+    ov.style.display='flex';
+    return;
+  }
   // Won!
   if(currentLevel>=4){
     // All levels beaten
@@ -695,6 +723,7 @@ function endGame(won){
     document.getElementById('lvl-ov').style.display='flex';
   }else{
     currentLevel++;
+    saveMaxLevel(Math.max(loadMaxLevel(),currentLevel)); // save newly unlocked level
     var next=getLvlCfg();
     document.getElementById('lvlMsg').textContent='LEVEL COMPLETE!';
     document.getElementById('lvlDesc').textContent=next.name+'\n'+next.desc;

@@ -96,9 +96,10 @@ var P=0,HEAL_CD=30000,PI=Math.PI,TAU=PI*2;
 /* ===== LEVEL CONFIG ===== */
 var currentLevel=1;
 var LEVEL_CONFIGS=[
-  {n:1,name:"Level 1 – Clash Grounds",desc:"Destroy the enemy base to claim victory",numAI:1,cornerMode:false,aiMult:1.0,aiStartGold:80,aiTickBase:0.8,aiCapMult:1.0,aiWaveDiv:1.0},
-  {n:2,name:"Level 2 – Storm Rising",desc:"The enemy has reinforced. You must be stronger!",numAI:1,cornerMode:false,aiMult:1.7,aiStartGold:200,aiTickBase:0.4,aiCapMult:1.5,aiWaveDiv:1.4},
-  {n:3,name:"Level 3 – Three Kingdoms",desc:"Three enemy warlords attack! Destroy them all!",numAI:3,cornerMode:true,aiMult:1.3,aiStartGold:120,aiTickBase:0.7,aiCapMult:1.2,aiWaveDiv:1.0}
+  {n:1,name:"Level 1 – Clash Grounds",desc:"Destroy the enemy base to claim victory",numAI:1,cornerMode:false,factions:false,aiMult:1.0,aiStartGold:80,aiTickBase:0.8,aiCapMult:1.0,aiWaveDiv:1.0},
+  {n:2,name:"Level 2 – Storm Rising",desc:"The enemy has reinforced. You must be stronger!",numAI:1,cornerMode:false,factions:false,aiMult:1.7,aiStartGold:200,aiTickBase:0.4,aiCapMult:1.5,aiWaveDiv:1.4},
+  {n:3,name:"Level 3 – Three Kingdoms",desc:"Three warlords fight for dominance — watch them tear each other apart!",numAI:3,cornerMode:true,factions:true,aiMult:1.2,aiStartGold:120,aiTickBase:0.7,aiCapMult:1.2,aiWaveDiv:1.0},
+  {n:4,name:"Level 4 – Four Kingdoms",desc:"Four rival warlords — alliances shift, betrayals are certain. Survive and conquer!",numAI:4,cornerMode:true,factions:true,aiMult:1.1,aiStartGold:100,aiTickBase:0.75,aiCapMult:1.1,aiWaveDiv:1.0}
 ];
 function getLvlCfg(){return LEVEL_CONFIGS[Math.min(currentLevel,3)-1]}
 
@@ -165,8 +166,28 @@ function makeAiState(cfg){
     mult:cfg.aiMult,
     tickBase:cfg.aiTickBase,
     capMult:cfg.aiCapMult,
-    waveMult:cfg.aiWaveDiv
+    waveMult:cfg.aiWaveDiv,
+    targetBase:null,   // chosen enemy base to march toward (faction mode)
+    targetCD:0         // seconds until target is re-evaluated
   };
+}
+
+// Pick a strategic target base for an AI team (faction mode).
+// Weights: player base gets +0.35 bonus; weaker bases are more attractive.
+// Re-evaluated every 25-45s, ensuring factions genuinely fight each other.
+function pickFactionTarget(tm){
+  var cfg=getLvlCfg();
+  var numT=1+cfg.numAI;
+  var best=null,bestW=-1;
+  for(var t=0;t<numT;t++){
+    if(t===tm)continue;
+    var b=base[t];if(!b||b.hp<=0)continue;
+    var hpRatio=b.hp/b.mhp;
+    // lower HP = juicier target; player gets a flat attraction bonus
+    var w=(1-hpRatio)*0.6 + (t===P?0.35:0.05) + Math.random()*0.2;
+    if(w>bestW){bestW=w;best=b;}
+  }
+  return best||base[P];
 }
 
 /* ===== LAYOUT ===== */
@@ -189,22 +210,26 @@ function layout(){
       var ct=teamTwr(1,j);if(ct){ct.x=base[1].x-Math.cos(-PI/4+tAng[j])*tDst[j];ct.y=base[1].y-Math.sin(-PI/4+tAng[j])*tDst[j]}
     }
   } else {
-    // 4-corner layout
-    var corners=[
-      {x:90,     y:H-90},  // team 0 bottom-left
-      {x:W-90,   y:90},    // team 1 top-right
-      {x:90,     y:90},    // team 2 top-left
-      {x:W-90,   y:H-90}   // team 3 bottom-right
+    // Multi-corner layout (level 3 = 4 teams, level 4 = 5 teams)
+    var cfg2=getLvlCfg();
+    var corners4=[
+      {x:90,     y:H-90},  // team 0 player – bottom-left
+      {x:W-90,   y:90},    // team 1 – top-right
+      {x:90,     y:90},    // team 2 – top-left
+      {x:W-90,   y:H-90}   // team 3 – bottom-right
     ];
-    for(var t=0;t<4;t++){
+    // 5th team (level 4): top-center
+    var corners5=corners4.concat([{x:Math.round(W/2), y:75}]);
+    var corners=cfg2.numAI>=4?corners5:corners4;
+    var numT=1+cfg2.numAI;
+    for(var t=0;t<numT;t++){
+      if(!base[t])continue;
       base[t].x=corners[t].x;base[t].y=corners[t].y;
       var cA=Math.atan2(H/2-corners[t].y,W/2-corners[t].x);
-      // 2 mines per team
-      var m0=teamMine(t,0);if(m0){m0.x=corners[t].x+Math.cos(cA-0.25)*160;m0.y=corners[t].y+Math.sin(cA-0.25)*160}
-      var m1=teamMine(t,1);if(m1){m1.x=corners[t].x+Math.cos(cA+0.25)*260;m1.y=corners[t].y+Math.sin(cA+0.25)*260}
-      // 2 towers per team
-      var tw0=teamTwr(t,0);if(tw0){tw0.x=corners[t].x+Math.cos(cA+0.15)*210;tw0.y=corners[t].y+Math.sin(cA+0.15)*210}
-      var tw1=teamTwr(t,1);if(tw1){tw1.x=corners[t].x+Math.cos(cA-0.15)*320;tw1.y=corners[t].y+Math.sin(cA-0.15)*320}
+      var m0=teamMine(t,0);if(m0){m0.x=corners[t].x+Math.cos(cA-0.25)*155;m0.y=corners[t].y+Math.sin(cA-0.25)*155}
+      var m1=teamMine(t,1);if(m1){m1.x=corners[t].x+Math.cos(cA+0.25)*250;m1.y=corners[t].y+Math.sin(cA+0.25)*250}
+      var tw0=teamTwr(t,0);if(tw0){tw0.x=corners[t].x+Math.cos(cA+0.15)*205;tw0.y=corners[t].y+Math.sin(cA+0.15)*205}
+      var tw1=teamTwr(t,1);if(tw1){tw1.x=corners[t].x+Math.cos(cA-0.15)*310;tw1.y=corners[t].y+Math.sin(cA-0.15)*310}
     }
   }
 }
@@ -254,14 +279,18 @@ function eb(tm){
   var cfg=getLvlCfg();
   if(!cfg.cornerMode){return base[1-tm]}
   if(tm===P){
-    // nearest alive enemy base
+    // player targets nearest alive enemy base by distance
     var best=null,bd=1e9;
-    for(var t=1;t<=3;t++){
+    for(var t=1;t<=cfg.numAI;t++){
       if(base[t]&&base[t].hp>0){var d=ds(base[P],base[t]);if(d<bd){bd=d;best=base[t]}}
     }
     return best||base[1];
   }
-  return base[P]; // all AI target player
+  // faction mode: use per-AI chosen target (refreshed in aiTick)
+  if(cfg.factions&&aiState[tm]&&aiState[tm].targetBase&&aiState[tm].targetBase.hp>0){
+    return aiState[tm].targetBase;
+  }
+  return base[P]; // fallback: target player
 }
 
 function fwdAngle(tm){var b=base[tm],e=eb(tm);if(!e)return 0;return Math.atan2(e.y-b.y,e.x-b.x)}
@@ -280,7 +309,8 @@ function teamColor(tm){
   if(tm===0)return'#5bc0de';
   if(tm===1)return'#e94560';
   if(tm===2)return'#ff9f00';
-  return'#c050ff';
+  if(tm===3)return'#c050ff';
+  return'#3ddc84'; // team 4 – green
 }
 function isEnemy(tmA,tmB){return tmA!==tmB}
 
@@ -471,9 +501,9 @@ function tick(n){
   if(!cfg2.cornerMode){
     if(base[1].hp<=0){endGame(true);return}
   }else{
-    if(base[1].hp<=0&&base[2].hp<=0&&base[3].hp<=0){endGame(true);return}
-    // clamp dead base HP
-    for(var tt=1;tt<=3;tt++)if(base[tt]&&base[tt].hp<0)base[tt].hp=0;
+    var allDead=true;
+    for(var tt=1;tt<=cfg2.numAI;tt++){if(base[tt]&&base[tt].hp>0){allDead=false}else if(base[tt]&&base[tt].hp<0)base[tt].hp=0;}
+    if(allDead){endGame(true);return}
   }
 
   // Run AI for each AI team
@@ -510,6 +540,18 @@ function aiDefendFor(tm){cmds[tm].warrior='defend';cmds[tm].berserker='defend';c
 function aiTick(tm,nowT,dt){
   var st=aiState[tm];st.cd-=dt;if(st.cd>0)return;
   st.cd=st.tickBase+Math.random()*0.4;
+
+  // --- Faction target refresh ---
+  var cfg3=getLvlCfg();
+  if(cfg3.factions){
+    st.targetCD-=st.cd+st.tickBase;
+    // Re-pick target if: no target, target dead, or timer expired (every 25-45s)
+    if(!st.targetBase||st.targetBase.hp<=0||st.targetCD<=0){
+      st.targetBase=pickFactionTarget(tm);
+      st.targetCD=25+Math.random()*20;
+    }
+  }
+
   var c=gold[tm],nMi=cnt(tm,'miner'),nW=cnt(tm,'warrior'),nB=cnt(tm,'berserker'),nSp=cnt(tm,'spy'),nAr=cnt(tm,'archer'),nDu=cnt(tm,'dummy');
   var nT=activeTwrN(tm);
   var nPw=cnt(P,'warrior')+cnt(P,'archer')+cnt(P,'berserker');
@@ -620,8 +662,8 @@ function uiUpdate(){
     document.getElementById('hp1').style.display='';
   }else{
     document.getElementById('hp0').textContent=Math.max(0,Math.ceil(base[P].hp));
-    var alive=0;for(var t=1;t<=3;t++)if(base[t]&&base[t].hp>0)alive++;
-    document.getElementById('hpSep').textContent=' | Enemies: '+alive;
+    var alive=0,cfg4=getLvlCfg();for(var t=1;t<=cfg4.numAI;t++)if(base[t]&&base[t].hp>0)alive++;
+    document.getElementById('hpSep').textContent=' | Enemies left: '+alive;
     document.getElementById('hp1').style.display='none';
   }
   var nm=nextMineFor(P),mb=document.getElementById('bMi');
@@ -644,7 +686,7 @@ function endGame(won){
   over=true;
   if(!won){document.getElementById('ov').style.display='flex';var m=document.getElementById('eMsg');m.textContent='DEFEAT!';m.className='l';return}
   // Won!
-  if(currentLevel>=3){
+  if(currentLevel>=4){
     // All levels beaten
     document.getElementById('lvlMsg').textContent='CHAMPION!';
     document.getElementById('lvlDesc').textContent='All warlords defeated! You have conquered the Clash Grounds!';
@@ -695,8 +737,9 @@ function resetForLevel(lvl){
       twrs.push({team:1,idx:i2,on:false,hp:0,mhp:TWR_HP,r:16,range:TWR_RANGE,ai:TWR_AI,last:0,dmg:TWR_DMG,x:0,y:0,hi:0,destroyed:false});
     }
   }else{
-    // Level 3: 2 mines per team, 2 towers per team, 4 teams
-    for(var t3=0;t3<4;t3++){
+    // Corner mode: 2 mines + 2 towers per team
+    var numT2=1+cfg.numAI;
+    for(var t3=0;t3<numT2;t3++){
       for(var i3=0;i3<2;i3++){
         var mineCost=i3===0?0:200;
         mines.push({team:t3,idx:i3,unlocked:i3===0,prod:MINE_D_BASE[i3].prod,cost:mineCost,r:20,cap:5,list:[],x:0,y:0});
@@ -740,7 +783,7 @@ function draw(nowT){
   for(var i=0;i<twrs.length;i++){
     var tw=twrs[i];if(!tw.on||tw.destroyed)continue;
     cx.save();cx.beginPath();cx.arc(tw.x,tw.y,tw.range,0,TAU);
-    cx.strokeStyle=tw.team===P?'rgba(100,180,255,0.12)':'rgba(255,100,100,0.12)';
+    cx.strokeStyle=teamColor(tw.team)+'22';
     cx.setLineDash([6,6]);cx.lineWidth=1;cx.stroke();cx.restore();
   }
 

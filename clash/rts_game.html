@@ -43,6 +43,24 @@ canvas{flex:1;display:block;cursor:crosshair}
 #startBtn{padding:16px 50px;font-size:22px;font-weight:700;cursor:pointer;border-radius:12px;border:2px solid #e94560;background:linear-gradient(135deg,#e94560,#c0392b);color:#fff;letter-spacing:2px;text-transform:uppercase;transition:0.3s;box-shadow:0 0 30px rgba(233,69,96,0.4)}
 #startBtn:hover{transform:scale(1.05);box-shadow:0 0 50px rgba(233,69,96,0.7)}
 #lvlind{position:fixed;top:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.65);color:#ffd700;font-size:14px;font-weight:700;padding:4px 16px;border-radius:12px;z-index:50;pointer-events:none;letter-spacing:2px;display:none}
+
+#shop{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;justify-content:center;align-items:center;flex-direction:column;z-index:195;gap:10px}
+#shop h1{font-size:36px;color:#ffd700;margin-bottom:4px}
+#shop .shop-chest{font-size:48px;color:#ffd700;font-weight:900;margin-bottom:4px}
+#shop .shop-sub{font-size:14px;color:#aaa;margin-bottom:16px}
+#shop .shop-items{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:16px}
+#shop .sitem{padding:16px 18px;background:#1a2a4a;border:2px solid #555;border-radius:10px;cursor:pointer;text-align:center;width:180px;transition:0.2s;position:relative}
+#shop .sitem:hover{border-color:#ffd700;background:#223355}
+#shop .sitem.bought{border-color:#53d769;background:#1a3a2a;cursor:pointer}
+#shop .sitem.cant{opacity:0.35;cursor:not-allowed}
+#shop .sitem h3{font-size:14px;color:#5bc0de;margin-bottom:5px}
+#shop .sitem .price{font-size:16px;color:#ffd700;font-weight:700;margin-bottom:4px}
+#shop .sitem p{font-size:11px;color:#bbb}
+#shop .sitem .tag{position:absolute;top:-8px;right:-8px;background:#53d769;color:#000;font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;display:none}
+#shop .sitem.bought .tag{display:block}
+#shop .shop-remain{font-size:15px;color:#aaa;margin-bottom:10px}
+#shop button{padding:14px 40px;font-size:18px;font-weight:700;cursor:pointer;border-radius:10px;border:2px solid #ffd700;background:linear-gradient(135deg,#ffd700,#e6a800);color:#000;letter-spacing:1px;text-transform:uppercase;transition:0.3s}
+#shop button:hover{transform:scale(1.04)}
 </style>
 </head>
 <body>
@@ -63,6 +81,7 @@ canvas{flex:1;display:block;cursor:crosshair}
   <button id="startBtn" onclick="G.start()">START BATTLE</button>
   <div class="stats">Base HP: 1000 &bull; Starting coins: 80 &bull; Spies flicker visible &mdash; towers always detect them!</div>
 </div>
+<div id="shop"><h1>WAR CHEST</h1><div class="shop-chest" id="shopChest">0</div><div class="shop-sub">Choose upgrades for the next battle (click to buy, click again to refund)</div><div class="shop-items" id="shopItems"></div><div class="shop-remain">Remaining: <span id="shopRemain">0</span></div><button onclick="G.shopDone()">PROCEED TO BATTLE</button></div>
 <div id="lvlind">LEVEL 1</div>
 <canvas id="c"></canvas>
 <div id="ui">
@@ -99,10 +118,10 @@ var P=0,HEAL_CD=30000,PI=Math.PI,TAU=PI*2;
 /* ===== LEVEL CONFIG ===== */
 var currentLevel=1;
 var LEVEL_CONFIGS=[
-  {n:1,name:"Level 1 – Clash Grounds",desc:"Destroy the enemy base to claim victory",numAI:1,cornerMode:false,factions:false,aiMult:1.0,aiStartGold:80,aiTickBase:0.8,aiCapMult:1.0,aiWaveDiv:1.0},
-  {n:2,name:"Level 2 – Storm Rising",desc:"The enemy has reinforced. You must be stronger!",numAI:1,cornerMode:false,factions:false,aiMult:1.7,aiStartGold:200,aiTickBase:0.4,aiCapMult:1.5,aiWaveDiv:1.4},
-  {n:3,name:"Level 3 – Three Kingdoms",desc:"Three warlords fight for dominance — watch them tear each other apart!",numAI:3,cornerMode:true,factions:true,aiMult:1.2,aiStartGold:120,aiTickBase:0.7,aiCapMult:1.2,aiWaveDiv:1.0},
-  {n:4,name:"Level 4 – Four Kingdoms",desc:"Four rival warlords — alliances shift, betrayals are certain. Survive and conquer!",numAI:4,cornerMode:true,factions:true,aiMult:1.1,aiStartGold:100,aiTickBase:0.75,aiCapMult:1.1,aiWaveDiv:1.0}
+  {n:1,name:"Level 1 â Clash Grounds",desc:"Destroy the enemy base to claim victory",numAI:1,cornerMode:false,factions:false,aiMult:1.0,aiStartGold:80,aiTickBase:0.8,aiCapMult:1.0,aiWaveDiv:1.0},
+  {n:2,name:"Level 2 â Storm Rising",desc:"The enemy has reinforced. You must be stronger!",numAI:1,cornerMode:false,factions:false,aiMult:2.0,aiStartGold:250,aiTickBase:0.35,aiCapMult:1.7,aiWaveDiv:1.4},
+  {n:3,name:"Level 3 â Three Kingdoms",desc:"Three warlords fight for dominance â watch them tear each other apart!",numAI:3,cornerMode:true,factions:true,aiMult:1.2,aiStartGold:120,aiTickBase:0.7,aiCapMult:1.2,aiWaveDiv:1.0},
+  {n:4,name:"Level 4 â Four Kingdoms",desc:"Four rival warlords â alliances shift, betrayals are certain. Survive and conquer!",numAI:4,cornerMode:true,factions:true,aiMult:1.1,aiStartGold:100,aiTickBase:0.75,aiCapMult:1.1,aiWaveDiv:1.0}
 ];
 function getLvlCfg(){return LEVEL_CONFIGS[Math.min(currentLevel,3)-1]}
 
@@ -148,9 +167,18 @@ var MINE_D_BASE=[{prod:5,cost:0},{prod:12,cost:200},{prod:25,cost:400}];
 var TWR_HP=150,TWR_COST=150,TWR_RANGE=180,TWR_AI=1500,TWR_DMG=15;
 var ARCH_RANGE=130;
 var AI_STRATS=['rusher','economist','turtle','balanced','spymaster'];
+var SHOP_DATA=[
+  [{id:'extra_miner',name:'Extra Miner',desc:'Start with 2 miners',cost:80},{id:'head_start',name:'Head Start',desc:'+50 starting coins',cost:100},{id:'fort_base',name:'Fortified Base',desc:'Base starts at 1200 HP',cost:150},{id:'free_tower',name:'Free Tower',desc:'1 tower pre-activated',cost:200},{id:'mine_boost',name:'Mine Boost',desc:'Mine 1 produces 8c/s',cost:120}],
+  [{id:'two_miners',name:'Two Extra Miners',desc:'Start with 3 miners',cost:120},{id:'war_funds',name:'War Funds',desc:'+100 starting coins',cost:150},{id:'steel_walls',name:'Steel Walls',desc:'Base starts at 1300 HP',cost:200},{id:'vet_blades',name:'Veteran Blades',desc:'Warriors deal 12 dmg',cost:180},{id:'tower_archer',name:'Tower + Archer',desc:'Free tower + 1 archer',cost:250}],
+  [{id:'three_miners',name:'Three Miners',desc:'Start with 4 miners',cost:150},{id:'war_chest2',name:'War Chest',desc:'+150 starting coins',cost:200},{id:'fortress',name:'Fortress',desc:'Base starts at 1500 HP',cost:280},{id:'tower_pair',name:'Tower Pair',desc:'2 towers pre-activated',cost:300},{id:'elite_army',name:'Elite Army',desc:'+1 warrior, archer, berserker',cost:350}]
+];
+
 
 /* ===== MUTABLE STATE (reset each level) ===== */
 var over=false,gold=[],healT=[];
+var gameStartTime=0,totalSpent=0,totalKills=0,earnedChest=0;
+var boughtUpgrades=[];
+var CHEST_KEY="cg_chest",UPGRADES_KEY="cg_upgrades";
 var cmds=[];
 var base=[];
 var mines=[],twrs=[];
@@ -216,10 +244,10 @@ function layout(){
     // Multi-corner layout (level 3 = 4 teams, level 4 = 5 teams)
     var cfg2=getLvlCfg();
     var corners4=[
-      {x:90,     y:H-90},  // team 0 player – bottom-left
-      {x:W-90,   y:90},    // team 1 – top-right
-      {x:90,     y:90},    // team 2 – top-left
-      {x:W-90,   y:H-90}   // team 3 – bottom-right
+      {x:90,     y:H-90},  // team 0 player â bottom-left
+      {x:W-90,   y:90},    // team 1 â top-right
+      {x:90,     y:90},    // team 2 â top-left
+      {x:W-90,   y:H-90}   // team 3 â bottom-right
     ];
     // 5th team (level 4): top-center
     var corners5=corners4.concat([{x:Math.round(W/2), y:75}]);
@@ -313,7 +341,7 @@ function teamColor(tm){
   if(tm===1)return'#e94560';
   if(tm===2)return'#ff9f00';
   if(tm===3)return'#c050ff';
-  return'#3ddc84'; // team 4 – green
+  return'#3ddc84'; // team 4 â green
 }
 function isEnemy(tmA,tmB){return tmA!==tmB}
 
@@ -495,7 +523,7 @@ function tick(n){
   for(var fi=floats.length-1;fi>=0;fi--){floats[fi].y-=35*dt;floats[fi].t-=dt;if(floats[fi].t<=0)floats.splice(fi,1)}
 
   // Remove dead units
-  for(var ri=units.length-1;ri>=0;ri--){if(units[ri].hp<=0){unmine(units[ri]);units.splice(ri,1)}}
+  for(var ri=units.length-1;ri>=0;ri--){if(units[ri].hp<=0){if(units[ri].tm!==P)totalKills++;unmine(units[ri]);units.splice(ri,1)}}
   for(var tci=0;tci<twrs.length;tci++){var tc=twrs[tci];if(tc.on&&!tc.destroyed&&tc.hp<=0){tc.on=false;tc.destroyed=true;tc.hp=0}}
 
   // Check end conditions
@@ -639,10 +667,10 @@ function aiTick(tm,nowT,dt){
 }
 
 /* ===== PLAYER ACTIONS ===== */
-function buyUnit(tp){var d=DEFS[tp];if(gold[P]<d.cost||cnt(P,tp)>=d.max)return;gold[P]-=d.cost;var u=spawn(P,tp);if(tp==='miner'&&cmds[P].miner==='mine')assignMine(u)}
-function buyDummyP(){if(gold[P]<DUM_COST||cnt(P,'dummy')>=DUM_MAX)return;gold[P]-=DUM_COST;placeDummy(P)}
-function buyMineP(){var m=nextMineFor(P);if(!m||gold[P]<m.cost)return;gold[P]-=m.cost;m.unlocked=true;for(var j=0;j<units.length;j++)if(units[j].tm===P&&units[j].tp==='miner')unmine(units[j]);if(cmds[P].miner==='mine')for(var k=0;k<units.length;k++)if(units[k].tm===P&&units[k].tp==='miner')assignMine(units[k])}
-function buyTowerP(){var t=nextTwrFor(P);if(!t||gold[P]<TWR_COST)return;gold[P]-=TWR_COST;t.on=true;t.destroyed=false;t.hp=t.mhp;t.last=0}
+function buyUnit(tp){var d=DEFS[tp];if(gold[P]<d.cost||cnt(P,tp)>=d.max)return;gold[P]-=d.cost;totalSpent+=d.cost;var u=spawn(P,tp);if(tp==='miner'&&cmds[P].miner==='mine')assignMine(u)}
+function buyDummyP(){if(gold[P]<DUM_COST||cnt(P,'dummy')>=DUM_MAX)return;gold[P]-=DUM_COST;totalSpent+=DUM_COST;placeDummy(P)}
+function buyMineP(){var m=nextMineFor(P);if(!m||gold[P]<m.cost)return;gold[P]-=m.cost;totalSpent+=m.cost;m.unlocked=true;for(var j=0;j<units.length;j++)if(units[j].tm===P&&units[j].tp==='miner')unmine(units[j]);if(cmds[P].miner==='mine')for(var k=0;k<units.length;k++)if(units[k].tm===P&&units[k].tp==='miner')assignMine(units[k])}
+function buyTowerP(){var t=nextTwrFor(P);if(!t||gold[P]<TWR_COST)return;gold[P]-=TWR_COST;totalSpent+=TWR_COST;t.on=true;t.destroyed=false;t.hp=t.mhp;t.last=0}
 function buyHealP(){if(gold[P]<250)return;var n=performance.now();if(n-healT[P]<HEAL_CD||base[P].hp>=base[P].mhp)return;gold[P]-=250;base[P].hp=Math.min(base[P].mhp,base[P].hp+50);healT[P]=n}
 function setCmd(tp,c){cmds[P][tp]=c;if(tp==='miner'){for(var j=0;j<units.length;j++){var u=units[j];if(u.tm===P&&u.tp==='miner'){unmine(u);if(c==='mine')assignMine(u)}}}updBtn()}
 function updBtn(){
@@ -690,6 +718,45 @@ function loadMaxLevel(){return parseInt(localStorage.getItem(SAVE_KEY)||'1',10)|
 function saveMaxLevel(lvl){try{localStorage.setItem(SAVE_KEY,String(lvl))}catch(e){}}
 
 /* ===== END GAME ===== */
+
+/* ===== WAR CHEST + SHOP ===== */
+function calcWarChest(){
+  var elapsed=(now-gameStartTime)/1000;var lvl=currentLevel;
+  var baseR=150+lvl*50;var speedB=elapsed<180?200:elapsed<300?120:elapsed<480?50:0;
+  var effic=Math.round(totalSpent*0.15);var killB=totalKills*3;
+  var hpPct=Math.max(0,base[P].hp)/base[P].mhp;var hpB=Math.round(hpPct*100);
+  var unspent=Math.max(0,gold[P]);var hoardPen=Math.round(unspent*0.4);
+  var raw=baseR+speedB+effic+killB+hpB-hoardPen;var rng=0.85+Math.random()*0.3;
+  return Math.max(20,Math.round(raw*rng));
+}
+function loadChest(){try{return parseInt(localStorage.getItem(CHEST_KEY)||'0')}catch(e){return 0}}
+function saveChest(v){try{localStorage.setItem(CHEST_KEY,String(v))}catch(e){}}
+function loadBoughtUpgrades(){try{return JSON.parse(localStorage.getItem(UPGRADES_KEY)||'[]')}catch(e){return[]}}
+function saveBoughtUpgrades(arr){try{localStorage.setItem(UPGRADES_KEY,JSON.stringify(arr))}catch(e){}}
+function showShop(chest,shopIdx){
+  earnedChest=chest;saveChest(chest);boughtUpgrades=[];saveBoughtUpgrades([]);
+  var items=SHOP_DATA[Math.min(shopIdx,SHOP_DATA.length-1)];
+  var el=document.getElementById('shopItems');
+  document.getElementById('shopChest').textContent=chest+' gold';
+  document.getElementById('shopRemain').textContent=chest;el.innerHTML='';
+  for(var i=0;i<items.length;i++){var it=items[i];
+    var div=document.createElement('div');div.className='sitem'+(it.cost>chest?' cant':'');
+    div.setAttribute('data-id',it.id);div.setAttribute('data-cost',String(it.cost));
+    div.innerHTML='<div class="tag">BOUGHT</div><div class="price">'+it.cost+'</div><h3>'+it.name+'</h3><p>'+it.desc+'</p>';
+    div.onclick=(function(item,d){return function(){toggleShopItem(item,d)}})(it,div);el.appendChild(div)}
+  document.getElementById('shop').style.display='flex';
+}
+function toggleShopItem(item,div){
+  var idx=boughtUpgrades.indexOf(item.id);
+  if(idx>=0){boughtUpgrades.splice(idx,1);div.className='sitem';earnedChest+=item.cost}
+  else{if(earnedChest<item.cost)return;boughtUpgrades.push(item.id);div.className='sitem bought';earnedChest-=item.cost}
+  document.getElementById('shopRemain').textContent=earnedChest;saveBoughtUpgrades(boughtUpgrades);
+  var allItems=document.querySelectorAll('#shopItems .sitem');
+  for(var i=0;i<allItems.length;i++){var si=allItems[i];if(!si.classList.contains('bought')){var c=parseInt(si.getAttribute('data-cost'));si.className=c>earnedChest?'sitem cant':'sitem'}}
+}
+function shopDone(){document.getElementById('shop').style.display='none';resetForLevel(currentLevel)}
+function hasShopUpg(id){return boughtUpgrades.indexOf(id)>=0}
+
 function endGame(won){
   over=true;
   if(!won){
@@ -699,14 +766,23 @@ function endGame(won){
     var ov=document.getElementById('ov');
     var m=document.getElementById('eMsg');m.textContent='DEFEAT!';m.className='l';
     document.getElementById('eSubMsg').textContent='You fell on Level '+currentLevel+'.';
-    // Restart from 1
-    document.getElementById('eBtnRestart').onclick=function(){currentLevel=1;resetForLevel(1);ov.style.display='none'};
-    // Resume from highest reached level (only show if >1)
+    // Restart from Level 1 (clear everything)
+    document.getElementById('eBtnRestart').onclick=function(){saveChest(0);saveBoughtUpgrades([]);currentLevel=1;resetForLevel(1);ov.style.display='none'};
+    // Retry level — go back to shop to reallocate chest
     var resumeBtn=document.getElementById('eBtnResume');
-    if(maxLvl>1){
-      document.getElementById('eResumeLvl').textContent=maxLvl;
+    if(currentLevel>1){
+      document.getElementById('eResumeLvl').textContent=currentLevel;
       resumeBtn.style.display='';
-      resumeBtn.onclick=function(){resetForLevel(maxLvl);ov.style.display='none'};
+      resumeBtn.onclick=function(){
+        ov.style.display='none';
+        var savedChest=loadChest();
+        var shopIdx=currentLevel-2;
+        if(savedChest>0 && shopIdx>=0 && shopIdx<SHOP_DATA.length){
+          showShop(savedChest,shopIdx);
+        }else{
+          saveBoughtUpgrades([]);resetForLevel(currentLevel);
+        }
+      };
     }else{
       resumeBtn.style.display='none';
     }
@@ -722,14 +798,15 @@ function endGame(won){
     document.getElementById('lvlBtn').onclick=function(){currentLevel=1;location.reload()};
     document.getElementById('lvl-ov').style.display='flex';
   }else{
+    var chest=calcWarChest();
     currentLevel++;
-    saveMaxLevel(Math.max(loadMaxLevel(),currentLevel)); // save newly unlocked level
-    var next=getLvlCfg();
-    document.getElementById('lvlMsg').textContent='LEVEL COMPLETE!';
-    document.getElementById('lvlDesc').textContent=next.name+'\n'+next.desc;
-    document.getElementById('lvlBtn').textContent='Next Level →';
-    document.getElementById('lvlBtn').onclick=function(){resetForLevel(currentLevel)};
-    document.getElementById('lvl-ov').style.display='flex';
+    saveMaxLevel(Math.max(loadMaxLevel(),currentLevel));
+    var shopIdx=currentLevel-2;
+    if(shopIdx>=0 && shopIdx<SHOP_DATA.length){
+      showShop(chest,shopIdx);
+    }else{
+      resetForLevel(currentLevel);
+    }
   }
 }
 
@@ -787,10 +864,29 @@ function resetForLevel(lvl){
 
   // Spawn initial miners
   var pm=spawn(P,'miner');if(cmds[P].miner==='mine')assignMine(pm);
+
+  /* Apply shop upgrades */
+  boughtUpgrades=loadBoughtUpgrades();
+  if(hasShopUpg('extra_miner')){var em=spawn(P,'miner');if(cmds[P].miner==='mine')assignMine(em)}
+  if(hasShopUpg('two_miners')){for(var xm=0;xm<2;xm++){var em2=spawn(P,'miner');if(cmds[P].miner==='mine')assignMine(em2)}}
+  if(hasShopUpg('three_miners')){for(var xm2=0;xm2<3;xm2++){var em3=spawn(P,'miner');if(cmds[P].miner==='mine')assignMine(em3)}}
+  if(hasShopUpg('head_start'))gold[P]+=50;
+  if(hasShopUpg('war_funds'))gold[P]+=100;
+  if(hasShopUpg('war_chest2'))gold[P]+=150;
+  if(hasShopUpg('fort_base')){base[P].hp=1200;base[P].mhp=1200}
+  if(hasShopUpg('steel_walls')){base[P].hp=1300;base[P].mhp=1300}
+  if(hasShopUpg('fortress')){base[P].hp=1500;base[P].mhp=1500}
+  if(hasShopUpg('mine_boost')){for(var mb=0;mb<mines.length;mb++){if(mines[mb].team===P&&mines[mb].idx===0)mines[mb].prod=8}}
+  if(hasShopUpg('vet_blades')){DEFS.warrior.dmg=12}
+  if(hasShopUpg('free_tower')||hasShopUpg('tower_archer')){for(var ft=0;ft<twrs.length;ft++){if(twrs[ft].team===P&&!twrs[ft].on){twrs[ft].on=true;twrs[ft].hp=twrs[ft].mhp;twrs[ft].destroyed=false;break}}}
+  if(hasShopUpg('tower_archer')){spawn(P,'archer')}
+  if(hasShopUpg('tower_pair')){var tpc=0;for(var fp=0;fp<twrs.length;fp++){if(twrs[fp].team===P&&!twrs[fp].on&&tpc<2){twrs[fp].on=true;twrs[fp].hp=twrs[fp].mhp;twrs[fp].destroyed=false;tpc++}}}
+  if(hasShopUpg('elite_army')){spawn(P,'warrior');spawn(P,'archer');spawn(P,'berserker')}
+
   for(var ait=1;ait<=cfg.numAI;ait++){var am=spawn(ait,'miner');if(cmds[ait].miner==='mine')assignMine(am)}
 
   updBtn();
-  lt=performance.now();
+  lt=performance.now();gameStartTime=lt;totalSpent=0;totalKills=0;
   if(!started){return}// will be started by startGame
   requestAnimationFrame(loop);
 }
@@ -962,11 +1058,11 @@ function startGame(){
   var cfg=getLvlCfg();
   var pm=spawn(P,'miner');assignMine(pm);
   for(var ait=1;ait<=cfg.numAI;ait++){var am=spawn(ait,'miner');assignMine(am)}
-  lt=performance.now();
+  lt=performance.now();gameStartTime=lt;totalSpent=0;totalKills=0;
   requestAnimationFrame(loop);
 }
 
-return{buy:buyUnit,buyMine:buyMineP,buyTower:buyTowerP,buyHeal:buyHealP,buyDummy:buyDummyP,cmd:setCmd,start:startGame};
+return{buy:buyUnit,buyMine:buyMineP,buyTower:buyTowerP,buyHeal:buyHealP,buyDummy:buyDummyP,cmd:setCmd,start:startGame,shopDone:shopDone};
 })();
 </script>
 </body>
